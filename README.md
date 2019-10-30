@@ -105,9 +105,6 @@ O cadastro de alunos só pode ser feito por administradores autenticados na apli
 
 O aluno não pode se autenticar no sistema, ou seja, não possui senha.
 
-## 📅 Entrega
-
-Esse desafio **não precisa ser entregue** e não receberá correção. Além disso, o código fonte **não está disponível** por fazer parte do **desafio final**, que será corrigido para **certificação** do bootcamp. Após concluir o desafio, adicionar esse código ao seu Github é uma boa forma de demonstrar seus conhecimentos para oportunidades futuras.
 
 ## :memo: Licença
 

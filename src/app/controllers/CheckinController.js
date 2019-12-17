@@ -6,7 +6,7 @@ import Checkin from '../models/Checkin';
 
 class CheckinController {
   async index(req, res) {
-    const student = await Student.findByPk(req.params.id);
+    const student = await Student.findByPks(req.params.id);
 
     if (!student) {
       return res.status(400).json({ error: 'Student not found' });

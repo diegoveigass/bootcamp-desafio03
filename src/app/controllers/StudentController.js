@@ -1,7 +1,20 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Student from '../models/Student';
 
 class StudentController {
+  async index(req, res) {
+    const { name } = req.query;
+    const students = await Student.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `%${name}%`,
+        },
+      },
+    });
+    return res.json(students);
+  }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
@@ -50,7 +63,9 @@ class StudentController {
       email: Yup.string()
         .email()
         .required(),
-      age: Yup.number().positive(),
+      age: Yup.number()
+        .positive()
+        .integer(),
       weight: Yup.number().positive(),
       height: Yup.number().positive(),
     });
@@ -59,24 +74,34 @@ class StudentController {
       return res.status(400).json({ error: 'validation fails' });
     }
 
-    const student = await Student.findOne({ where: { email: req.body.email } });
+    const { id } = req.params;
+
+    const student = await Student.findOne({ where: { id } });
 
     if (!student) {
       return res.status(401).json({ error: 'Student not found.' });
     }
 
-    const { id, name, email, age, weight, height } = await student.update(
-      req.body
-    );
+    const { name, email, age, weight, height } = await student.update(req.body);
 
     return res.json({
-      id,
       name,
       email,
       age,
       weight,
       height,
     });
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+    const student = await Student.findOne({
+      where: { id },
+    });
+    if (!student) {
+      return res.status(400).json({ error: 'student not found' });
+    }
+    return res.json(student);
   }
 }
 

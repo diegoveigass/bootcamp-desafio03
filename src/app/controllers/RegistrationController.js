@@ -11,7 +11,7 @@ class RegistrationController {
   async index(req, res) {
     const registration = await Registration.findAll({
       where: { canceled_at: null },
-      attributes: ['id', 'start_date', 'end_date', 'price'],
+      attributes: ['id', 'start_date', 'end_date', 'price', 'active'],
       include: [
         {
           model: Student,

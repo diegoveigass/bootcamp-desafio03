@@ -3,9 +3,7 @@ import Plan from '../models/Plan';
 
 class PlanController {
   async index(req, res) {
-    const plans = await Plan.findAll({
-      attributes: ['id', 'title', 'duration', 'price'],
-    });
+    const plans = await Plan.findAll();
     return res.json(plans);
   }
 
@@ -66,6 +64,17 @@ class PlanController {
     });
   }
 
+  async show(req, res) {
+    const { id } = req.params;
+    const plan = await Plan.findOne({
+      where: { id },
+    });
+    if (!plan) {
+      return res.status(400).json({ error: 'plan not found' });
+    }
+    return res.json(plan);
+  }
+
   async delete(req, res) {
     const plan = await Plan.findByPk(req.params.id);
 
@@ -73,9 +82,17 @@ class PlanController {
       return res.status(401).json({ error: 'Plan not found to delete' });
     }
 
-    await plan.destroy();
+    await Plan.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
 
-    return res.json({ ok: true });
+    const plans = await Plan.findAll({
+      attributes: ['id', 'title', 'duration', 'price'],
+    });
+
+    return res.json(plans);
   }
 }
 

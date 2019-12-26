@@ -7,6 +7,7 @@ class Plan extends Model {
         title: Sequelize.STRING,
         duration: Sequelize.INTEGER,
         price: Sequelize.DOUBLE,
+        totalPrice: Sequelize.VIRTUAL,
       },
       {
         sequelize,

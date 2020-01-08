@@ -1,4 +1,4 @@
-import { startOfHour, parseISO, addMonths } from 'date-fns';
+import { startOfHour, parseISO, addMonths, isAfter } from 'date-fns';
 import * as Yup from 'yup';
 import Student from '../models/Student';
 import Plan from '../models/Plan';
@@ -182,7 +182,26 @@ class RegistrationController {
   }
 
   async delete(req, res) {
-    const registration = await Registration.findByPk(req.params.id, {
+    const registration = await Registration.findByPk(req.params.id);
+
+    if (!registration) {
+      return res.status(401).json({ error: 'registration not found' });
+    }
+
+    const { start_date } = registration;
+
+    if (isAfter(new Date(), start_date)) {
+      return res.status(400).json({ error: 'registration is active' });
+    }
+
+    await Registration.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    const registrations = await Registration.findAll({
+      attributes: ['id', 'price', 'start_date', 'end_date', 'active'],
       include: [
         {
           model: Student,
@@ -192,20 +211,12 @@ class RegistrationController {
         {
           model: Plan,
           as: 'plan',
-          attributes: ['id', 'title', 'duration'],
+          attributes: ['id', 'title', 'duration', 'price'],
         },
       ],
     });
 
-    if (!registration) {
-      return res.status(400).json({ error: 'registration not found' });
-    }
-
-    registration.canceled_at = new Date();
-
-    await registration.save();
-
-    return res.json(registration);
+    return res.json(registrations);
   }
 }
 

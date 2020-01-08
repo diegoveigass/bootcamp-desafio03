@@ -28,6 +28,30 @@ class RegistrationController {
     return res.json(registration);
   }
 
+  async show(req, res) {
+    const { id } = req.params;
+    const registration = await Registration.findOne({
+      where: { id },
+      attributes: ['id', 'price', 'start_date', 'end_date', 'active'],
+      include: [
+        {
+          model: Student,
+          as: 'student',
+          attributes: ['id', 'name', 'email'],
+        },
+        {
+          model: Plan,
+          as: 'plan',
+          attributes: ['id', 'title', 'duration', 'price'],
+        },
+      ],
+    });
+    if (!registration) {
+      return res.status(400).json({ error: 'registration does not exists' });
+    }
+    return res.json(registration);
+  }
+
   async store(req, res) {
     const schema = Yup.object().shape({
       student_id: Yup.number().required(),

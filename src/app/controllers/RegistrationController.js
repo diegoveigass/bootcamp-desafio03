@@ -9,8 +9,7 @@ import Queue from '../../lib/Queue';
 
 class RegistrationController {
   async index(req, res) {
-    const registration = await Registration.findAll({
-      where: { canceled_at: null },
+    const registrations = await Registration.findAll({
       attributes: ['id', 'start_date', 'end_date', 'price', 'active'],
       include: [
         {
@@ -21,11 +20,11 @@ class RegistrationController {
         {
           model: Plan,
           as: 'plan',
-          attributes: ['id', 'title', 'duration'],
+          attributes: ['id', 'title', 'duration', 'price'],
         },
       ],
     });
-    return res.json(registration);
+    return res.json(registrations);
   }
 
   async show(req, res) {
